@@ -83,9 +83,15 @@ double bench_condvar() {
 }
 
 int main() {
+	for (int i = 0; i < 2; i++) {
+		// warm up
+		bench_spsc();
+		bench_mutex();
+		bench_condvar();
+	}
+	double t1 = bench_spsc();
 	double t2 = bench_mutex();
 	double t3 = bench_condvar();
-	double t1 = bench_spsc();
 	std::printf("spsc::Queue         %.3f s  %.1f M/s\n", t1, N / t1 / 1e6);
 	std::printf("std::queue+mutex    %.3f s  %.1f M/s\n", t2, N / t2 / 1e6);
 	std::printf("std::queue+condvar  %.3f s  %.1f M/s\n", t3, N / t3 / 1e6);
