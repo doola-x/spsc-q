@@ -10,7 +10,7 @@
 #include <thread>
 #include <utility>
 
-/// poc of a program that allocates a worst case (n) spsc q's
+/// poc of a program that allocates a worst case (Q_MAX) spsc q's
 /// and can acquire to fill with tasks, execute those tasks in
 /// and eventually release the queue back to the pool. the q's
 /// are lock-free and benches well against q's w/ mutex's and cv's.
@@ -51,6 +51,7 @@ struct QueuePool {
     }
 
     void release(spsc::Queue<T, q_cap>* value) {
+		value->reset();
 		free_[free_top_++] = value;
     }
 };
