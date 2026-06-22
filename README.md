@@ -1,5 +1,8 @@
 # spsc-q
 
+## MAKEFILE
+Use `make build` and `make bench` to run this application.
+
 ## include/spsc/queue.hpp
 Single-producer / single-consumer bounded lock-free queue with a small buffer
 optimization. Built for trading-style hot paths: preallocate everything up
