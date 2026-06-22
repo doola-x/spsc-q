@@ -1,14 +1,14 @@
 # spsc-q
 
-## MAKEFILE
+### MAKEFILE
 Use `make build` and `make bench` to run this application.
 
-## include/spsc/queue.hpp
+### include/spsc/queue.hpp
 Single-producer / single-consumer bounded lock-free queue with a small buffer
 optimization. Built for trading-style hot paths: preallocate everything up
 front, then push/pop in a tight loop with no locks and no per-op allocation.
 
-## bench/bench_queue.cpp
+### bench/bench_queue.cpp
 Throughput comparison of three single-producer / single-consumer queues, each
 moving `N` `uint64_t` values from a producer thread to a consumer (the main
 thread) and timing the round trip:
@@ -23,7 +23,7 @@ thread) and timing the round trip:
 `main()` runs all three and prints elapsed seconds and millions of ops/sec for
 each, so the lock-free queue can be compared against the lock-based baselines.
 
-## src/main.cpp
+### src/main.cpp
 POC style application that creates a few additional custom objects, `QueuePool`
 and `Task`. `QueuePool` allocates a worst case `Q_MAX` amount of `spsc::Queue<T, CAPACITY>`s
 which can be `acquire()`d and `release()`d back to the pool. The pool maintains a 
