@@ -18,14 +18,13 @@ constexpr int N = 10'000'000;
   // return time
 
 double bench_spsc() {
-	auto t0 = Clock::now();
-
 	spsc::Queue<std::uint64_t, 4096> q(4096);
 	std::thread prod([&] { 
 		for (int i = 0; i < N;) {
 			if (q.try_push(i)) ++i; 
 		}
 	});
+	auto t0 = Clock::now();
 
 	for (int n = 0; n < N;) { 
 		std::uint64_t v; 
@@ -37,18 +36,17 @@ double bench_spsc() {
 }
 
 double bench_mutex() {
-	auto t0 = Clock::now();
-
 	std::queue<std::uint64_t> q;
 	std::mutex m;
-
+	
 	std::thread prod([&] {
 		for (int i = 0; i < N; ++i) { 
 			std::lock_guard lk(m); 
 			q.push(i); 
 		}
 	});
-
+	auto t0 = Clock::now();
+	
 	for (int n = 0; n < N;) {
 		std::lock_guard lk(m);
 		if (!q.empty()) { q.pop(); ++n; }
@@ -59,12 +57,10 @@ double bench_mutex() {
 }
 
 double bench_condvar() {
-	auto t0 = Clock::now();
-
 	std::queue<std::uint64_t> q;
 	std::mutex m;
 	std::condition_variable cv;
-
+	
 	std::thread prod([&] {
 		for (int i = 0; i < N; ++i) {
 			{
@@ -74,6 +70,7 @@ double bench_condvar() {
 			cv.notify_one();
 		}
 	});
+	auto t0 = Clock::now();
 
 	for (int n = 0; n < N; ++n) {
 		std::unique_lock lk(m);
@@ -86,10 +83,10 @@ double bench_condvar() {
 }
 
 int main() {
-  double t1 = bench_spsc();
-  double t2 = bench_mutex();
-  double t3 = bench_condvar();
-  std::printf("spsc::Queue         %.3f s  %.1f M/s\n", t1, N / t1 / 1e6);
-  std::printf("std::queue+mutex    %.3f s  %.1f M/s\n", t2, N / t2 / 1e6);
-  std::printf("std::queue+condvar  %.3f s  %.1f M/s\n", t3, N / t3 / 1e6);
+	double t2 = bench_mutex();
+	double t3 = bench_condvar();
+	double t1 = bench_spsc();
+	std::printf("spsc::Queue         %.3f s  %.1f M/s\n", t1, N / t1 / 1e6);
+	std::printf("std::queue+mutex    %.3f s  %.1f M/s\n", t2, N / t2 / 1e6);
+	std::printf("std::queue+condvar  %.3f s  %.1f M/s\n", t3, N / t3 / 1e6);
 }
